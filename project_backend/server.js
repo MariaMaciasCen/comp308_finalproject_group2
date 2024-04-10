@@ -2,10 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const {
-  EmployeeQueryType,
-  EmployeeMutationType,
-} = require("./schemas/Employee");
+const { UserQueryType, UserMutationType } = require("./schemas/User");
 const expressGraphQL = require("express-graphql").graphqlHTTP;
 
 const { GraphQLSchema } = require("graphql");
@@ -16,8 +13,8 @@ db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
 
 const schema = new GraphQLSchema({
-  query: EmployeeQueryType,
-  mutation: EmployeeMutationType,
+  query: UserQueryType,
+  mutation: UserMutationType,
 });
 
 app.use(express.json());
@@ -42,4 +39,4 @@ app.use(
   })
 );
 
-app.listen(3000, () => console.log("Server Started"));
+app.listen(3000, () => console.log("Server Started port 3000"));
