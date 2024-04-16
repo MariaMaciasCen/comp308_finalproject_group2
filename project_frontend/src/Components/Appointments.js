@@ -1,7 +1,12 @@
 import React from "react";
+import { InlineWidget } from "react-calendly";
 
 const Appointments = () => {
-  return <div>Appointments Page</div>;
+  return (
+    <div className="App">
+      <InlineWidget url="https://calendly.com/shawanagideon/nurse" />
+    </div>
+  );
 };
 
 export default Appointments;
