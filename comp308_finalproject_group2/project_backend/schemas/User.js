@@ -78,6 +78,21 @@ const UserQueryType = new GraphQLObjectType({
         return users;
       },
     },
+    VitalSigns: {
+      type: new GraphQLList(VitalSignsType),
+      description: "List of Vital Signs for a User",
+      args: {
+        userId: { type: GraphQLString },
+      },
+      resolve: async (parent, args) => {
+        const user = await User.findById(args.userId);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        const vitalSigns = await VitalSign.find({ userId: args.userId });
+        return vitalSigns;
+      },
+    },
     Login: {
       type: UserLoginType,
       args: {

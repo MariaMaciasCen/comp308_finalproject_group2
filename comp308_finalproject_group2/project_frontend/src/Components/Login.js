@@ -25,11 +25,13 @@ const Login = () => {
 
   const [getLogin] = useLazyQuery(LOGIN);
 
+  
+
   const onLogin = () => {
     getLogin({
       variables: loginForm,
       onCompleted(data) {
-        navigate("/enter-vital-signs");
+        navigate("/patient-list");
       },
       onError(data) {
         setError(data.message);
