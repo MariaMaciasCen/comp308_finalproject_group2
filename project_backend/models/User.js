@@ -15,7 +15,17 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  vitalSigns: [
+    {
+      temperature: { type: Number },
+      heartRate: { type: Number },
+      bloodPressure: { type: String },
+      respiratoryRate: { type: Number },
+    },
+  ],
 });
+
+
 
 // salting and hashing the password
 userSchema.pre("save", async function (next) {

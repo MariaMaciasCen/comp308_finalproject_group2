@@ -6,6 +6,8 @@ import Topbar from "./UI/Topbar";
 import Footer from "./UI/Footer";
 import Register from "./Components/Register";
 import Appointments from "./Components/Appointments";
+import PatientList from './Components/PatientList';
+import EnterVitalSigns from './Components/EnterVitalSigns'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="appointments" element={<Appointments />} />
+        <Route path="/patient-list" element={<PatientList/>} />
+        <Route path={`/patient/:userId/records`} element={<EnterVitalSigns/>} />
       </Routes>
       <Footer />
     </BrowserRouter>

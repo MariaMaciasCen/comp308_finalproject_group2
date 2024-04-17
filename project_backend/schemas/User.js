@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const VitalSign = require("../models/VitalSign");
 const {
   GraphQLObjectType,
   GraphQLList,
@@ -9,7 +9,20 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
 } = require("graphql");
+
+const VitalSignsType = new GraphQLObjectType({
+  name: "VitalSigns",
+  description: "This represents the vital signs of a user",
+  fields: () => ({
+    temperature: { type: GraphQLFloat },
+    heartRate: { type: GraphQLInt },
+    bloodPressure: { type: GraphQLString },
+    respiratoryRate: { type: GraphQLInt },
+  }),
+});
 
 const UserType = new GraphQLObjectType({
   name: "User",
@@ -19,6 +32,7 @@ const UserType = new GraphQLObjectType({
     email: { type: GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLNonNull(GraphQLString) },
     role: { type: GraphQLNonNull(GraphQLString) },
+    vitalSigns: { type: new GraphQLList(VitalSignsType) },
   }),
 });
 
@@ -49,7 +63,7 @@ const UserQueryType = new GraphQLObjectType({
       type: UserType,
       description: "A Single User",
       args: {
-        _id: { type: GraphQLString },
+        _id: { type: GraphQLNonNull(GraphQLID) },
       },
       resolve: async (parent, args) => {
         const user = await User.findById(args._id);
@@ -62,6 +76,21 @@ const UserQueryType = new GraphQLObjectType({
       resolve: async () => {
         const users = await User.find();
         return users;
+      },
+    },
+    VitalSigns: {
+      type: new GraphQLList(VitalSignsType),
+      description: "List of Vital Signs for a User",
+      args: {
+        userId: { type: GraphQLString },
+      },
+      resolve: async (parent, args) => {
+        const user = await User.findById(args.userId);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        const vitalSigns = await VitalSign.find({ userId: args.userId });
+        return vitalSigns;
       },
     },
     Login: {
@@ -132,7 +161,53 @@ const UserMutationType = new GraphQLObjectType({
         return newUser;
       },
     },
-
+    UpdateVitalSigns: {
+      type: VitalSignsType,
+      description: "Update vital signs for a user",
+      args: {
+        userId: { type: GraphQLNonNull(GraphQLString) },
+        temperature: { type: GraphQLFloat },
+        heartRate: { type: GraphQLFloat },
+        bloodPressure: { type: GraphQLString },
+        respiratoryRate: { type: GraphQLFloat },
+      },
+      resolve: async (parent, args) => {
+        // Extract arguments from the mutation input
+        const { userId, temperature, heartRate, bloodPressure, respiratoryRate } = args;
+    
+        try {
+          // Capture the current date and time
+          const currentDate = new Date();
+          const date = currentDate.toISOString().split('T')[0]; // Format the date as YYYY-MM-DD
+          const time = currentDate.toTimeString().split(' ')[0]; // Format the time as HH:MM:SS
+    
+          // Create a new instance of VitalSign model with the vital sign data
+          const newVitalSign = new VitalSign({
+            userId,
+            date,
+            time,
+            temperature,
+            heartRate,
+            bloodPressure,
+            respiratoryRate,
+          });
+          
+          // Save the new vital sign entry to the vitalSign table
+          await newVitalSign.save();
+    
+          // Return the user document (no need to modify it since we're saving to a separate collection)
+         // return User.findById(userId);//IMPORTANTTTT
+         return {
+          vitalSign: newVitalSign,
+          date,
+          time
+        };
+        } catch (error) {
+          console.error("Error updating vital signs:", error);
+          throw new Error("Failed to update vital signs.");
+        }
+      },
+    },
     EditUser: {
       type: UserType,
       description: "Edit an User by Id",
