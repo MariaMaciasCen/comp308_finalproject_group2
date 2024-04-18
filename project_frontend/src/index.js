@@ -28,7 +28,7 @@ root.render(
       <App />
     
       <ApolloProvider client={client4000}>
-        <GameVideo />
+        
       </ApolloProvider>
       </ApolloProvider>
   </React.StrictMode>
