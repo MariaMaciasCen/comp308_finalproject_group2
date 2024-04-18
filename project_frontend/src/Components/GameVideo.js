@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-// App.js
-=======
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
 import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
 
@@ -20,26 +16,47 @@ const GameVideo = () => {
   const { loading, data, error } = useQuery(GET_VIDEOS);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [videoTime, setVideoTime] = useState(0);
-<<<<<<< HEAD
-  const [timer, setTimer] = useState(0);
-=======
   const [timer, setTimer] = useState('0');  // 타이머를 문자열로 초기화합니다.
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
+  const [bgcolor, setColor] = useState(0);
+  const [completeded, setCompleted] = useState(0);
+  const [Level,levelup]= useState(0);
+  const Leveling= () =>{
+    if (completeded+Number(timer) >= 100) {
+        levelup(()=> {
+          const nextLevel = Level + 1; 
+           setCompleted(completeded+Number(timer)-100);
+            return nextLevel;  
+        });
+      }
+  };
+ 
+
+  const containerStyles = {
+    height: 20,
+    width: '100%',
+    backgroundColor: "#e0e0de",
+    borderRadius: 50,
+    margin: 50
+  }
+
+  const fillerStyles = {
+    height: '100%',
+    width: `${completeded}%`,
+    backgroundColor: bgcolor,
+    transition: 'width 1s ease-in-out',
+    borderRadius: 'inherit',
+    textAlign: 'right'
+  }
+
+  const labelStyles = {
+    padding: 5,
+    color: 'blue',
+    fontWeight: 'bold'
+  }
 
   useEffect(() => {
     let interval;
 
-<<<<<<< HEAD
-    if (selectedVideo && timer < videoTime) {
-      interval = setInterval(() => {
-        setTimer(prev => {
-          if (prev < videoTime) {
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            console.log('Done');
-            return prev;
-=======
     if (selectedVideo && Number(timer) < videoTime) {
       interval = setInterval(() => {
         setTimer(prev => {
@@ -48,8 +65,7 @@ const GameVideo = () => {
             return nextTime.toString();  // 숫자를 문자열로 변환하여 상태를 업데이트합니다.
           } else {
             clearInterval(interval);
-            return 'Done';  // 시간이 끝나면 "Done"으로 상태를 업데이트합니다.
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
+            return '20';  // 시간이 끝나면 "Done"으로 상태를 업데이트합니다.
           }
         });
       }, 1000);
@@ -61,22 +77,24 @@ const GameVideo = () => {
   }, [selectedVideo, timer, videoTime]);
 
   if (loading) return <p>Loading videos...</p>;
-  if (error) return <p>Error loading videos!</p>;
+  else if (error) return <p>Error loading videos!</p>;
 
   return (
     <div className="App">
       <h1>Video Player</h1>
+      <div>
+      <div style={containerStyles}>
+      <div style={fillerStyles}>
+        <span style={labelStyles} >XP{`${completeded}%`}</span>
+      </div>
+      </div></div>
       <ul>
         {data.videos.map(video => (
           <li key={video.id}>
             <button onClick={() => {
               setSelectedVideo(video.videoUrl);
               setVideoTime(video.videoTime);
-<<<<<<< HEAD
-              setTimer(0);
-=======
               setTimer('0');  // 타이머를 0으로 리셋합니다.
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
             }}>
               {video.title}
             </button>
@@ -94,27 +112,23 @@ const GameVideo = () => {
             allowFullScreen
           ></iframe>
         ) : (
-<<<<<<< HEAD
-          <video controls autoPlay onEnded={() => console.log('Video ended')}>
-=======
-          <video controls autoPlay onEnded={() => setTimer('Done')}>
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
+          <video controls autoPlay onEnded={() => {setCompleted(completeded+(timer))}}>
             <source src={selectedVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         )
       )}
-<<<<<<< HEAD
-      <div>Timer: {timer} seconds</div>
-=======
-      <div>Timer: {timer}</div>  // 타이머 상태를 화면에 표시합니다.
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
+      <div>Timer: {timer}</div>  
+      <button onClick={() => {
+            const randomColor = Math.floor(Math.random()*16777215).toString(16);
+            setColor("#" +randomColor);
+            Leveling(completeded+( Number(timer)*0.5));
+            setCompleted(completeded+( Number(timer)));
+      }}>Generate New Random Color</button>
+<       span id="color"></span>
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default GameVideo;
-=======
-export default GameVideo;
->>>>>>> 531c17d2d0c24391514f5676dbfdd5e9c4c8521d
+
