@@ -8,28 +8,24 @@ import "fa-icons";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import GameVideo from "./Components/GameVideo";
 
-
 const client = new ApolloClient({
   uri: "http://localhost:3000/graphql",
   cache: new InMemoryCache(),
 });
-
 
 const client4000 = new ApolloClient({
   uri: "http://localhost:4000/graphql",
   cache: new InMemoryCache(),
 });
 
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
+    <ApolloProvider client={client} >
       <App />
-    
-      <ApolloProvider client={client4000}>
+    </ApolloProvider>
+    <ApolloProvider client={client4000}>
         <GameVideo />
-      </ApolloProvider>
       </ApolloProvider>
   </React.StrictMode>
 );
