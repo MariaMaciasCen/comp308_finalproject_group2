@@ -15,10 +15,10 @@ const UserType = new GraphQLObjectType({
   name: "User",
   description: "This represents a user in the app",
   fields: () => ({
-    _id: { type: newGraphQLNonNull(GraphQLString) },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    password: { type: GraphQLNonNull(GraphQLString) },
-    role: { type: GraphQLNonNull(GraphQLString) },
+    _id: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
+    role: { type: new GraphQLNonNull(GraphQLString) },
   }),
 });
 
@@ -26,10 +26,10 @@ const UserLoginType = new GraphQLObjectType({
   name: "UserLogin",
   description: "This represents a user login in the app",
   fields: () => ({
-    _id: { type: GraphQLNonNull(GraphQLString) },
-    email: { type: GraphQLNonNull(GraphQLString) },
-    password: { type: GraphQLNonNull(GraphQLString) },
-    token: { type: GraphQLNonNull(GraphQLString) },
+    _id: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
+    token: { type: new GraphQLNonNull(GraphQLString) },
   }),
 });
 
@@ -37,7 +37,7 @@ const UserDeleteType = new GraphQLObjectType({
   name: "Success",
   description: "This represents the result of deleting an user",
   fields: () => ({
-    success: { type: GraphQLNonNull(GraphQLBoolean) },
+    success: { type: new GraphQLNonNull(GraphQLBoolean) },
   }),
 });
 
@@ -118,9 +118,9 @@ const UserMutationType = new GraphQLObjectType({
       type: UserType,
       description: "Add a User",
       args: {
-        password: { type: GraphQLNonNull(GraphQLString) },
-        email: { type: GraphQLNonNull(GraphQLString) },
-        role: { type: GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        role: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args) => {
         const AddUser = new User({
@@ -137,10 +137,10 @@ const UserMutationType = new GraphQLObjectType({
       type: UserType,
       description: "Edit an User by Id",
       args: {
-        id: { type: GraphQLNonNull(GraphQLString) },
-        password: { type: GraphQLNonNull(GraphQLString) },
-        email: { type: GraphQLNonNull(GraphQLString) },
-        role: { type: GraphQLNonNull(GraphQLString) },
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        role: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args) => {
         const EditUser = User.findByIdAndUpdate(
@@ -160,7 +160,7 @@ const UserMutationType = new GraphQLObjectType({
       type: UserDeleteType,
       description: "Delete an User by Id",
       args: {
-        id: { type: GraphQLNonNull(GraphQLString) },
+        id: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: async (parent, args) => {
         const result = await User.findByIdAndDelete(args.id);

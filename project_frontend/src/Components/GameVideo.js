@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
 
@@ -17,20 +16,20 @@ const GameVideo = () => {
   const { loading, data, error } = useQuery(GET_VIDEOS);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [videoTime, setVideoTime] = useState(0);
-  const [timer, setTimer] = useState(0);
+  const [timer, setTimer] = useState('0');  // 타이머를 문자열로 초기화합니다.
 
   useEffect(() => {
     let interval;
 
-    if (selectedVideo && timer < videoTime) {
+    if (selectedVideo && Number(timer) < videoTime) {
       interval = setInterval(() => {
         setTimer(prev => {
-          if (prev < videoTime) {
-            return prev + 1;
+          const nextTime = Number(prev) + 1;  // prev 값을 숫자로 변환하여 1 증가시킵니다.
+          if (nextTime < videoTime) {
+            return nextTime.toString();  // 숫자를 문자열로 변환하여 상태를 업데이트합니다.
           } else {
             clearInterval(interval);
-            console.log('Done');
-            return prev;
+            return 'Done';  // 시간이 끝나면 "Done"으로 상태를 업데이트합니다.
           }
         });
       }, 1000);
@@ -53,7 +52,7 @@ const GameVideo = () => {
             <button onClick={() => {
               setSelectedVideo(video.videoUrl);
               setVideoTime(video.videoTime);
-              setTimer(0);
+              setTimer('0');  // 타이머를 0으로 리셋합니다.
             }}>
               {video.title}
             </button>
@@ -71,13 +70,13 @@ const GameVideo = () => {
             allowFullScreen
           ></iframe>
         ) : (
-          <video controls autoPlay onEnded={() => console.log('Video ended')}>
+          <video controls autoPlay onEnded={() => setTimer('Done')}>
             <source src={selectedVideo} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         )
       )}
-      <div>Timer: {timer} seconds</div>
+      <div>Timer: {timer}</div>  // 타이머 상태를 화면에 표시합니다.
     </div>
   );
 };
