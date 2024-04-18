@@ -30,20 +30,22 @@ const schema = buildSchema(`
   type Player {
     id: ID!
     playername: String
-    playerxp: String
+    playerxp: Int
   }
   input PlayerInput {
     playername: String
-    playerxp: String
+    playerxp: Int
   }
   type Query {
     videos: [Video]
     getPlayer(id: ID!): Player
+    getPlayerByName(playername: String!): Player
   }
   type Mutation {
     createVideo(input: VideoInput): Video
     createPlayer(input: PlayerInput): Player
-    updatePlayerXp(id: ID!, playerxp: String): Player
+    updatePlayerXp(id: ID!, playerxp: Int): Player
+    updatePlayerXpByName(playername: String!, playerxp: Int): Player
   }
 `);
 
@@ -51,6 +53,7 @@ const schema = buildSchema(`
 const root = {
   videos: () => Video.find({}),
   getPlayer: ({ id }) => Player.findById(id),
+  getPlayerByName: ({ playername }) => Player.findOne({ playername: playername }),
   createVideo: ({ input }) => {
     const newVideo = new Video({
       title: input.title,
@@ -69,6 +72,9 @@ const root = {
   },
   updatePlayerXp: ({ id, playerxp }) => {
     return Player.findByIdAndUpdate(id, { playerxp: playerxp }, { new: true });
+  },
+  updatePlayerXpByName: ({ playername, playerxp }) => {
+    return Player.findOneAndUpdate({ playername: playername }, { playerxp: playerxp }, { new: true });
   }
 };
 
