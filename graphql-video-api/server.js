@@ -1,20 +1,16 @@
-
+const mongoose = require('mongoose');
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
-const mongoose = require('mongoose');
+const Player = require('./models/Player');  // 플레이어 모델 임포트
 const Video = require('./models/Video');
 const cors = require('cors');
-
-
 
 // MongoDB 연결
 mongoose.connect('mongodb+srv://ChatApptest:1234567890@cluster0.9nevfyr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true});
 mongoose.connection.once('open', () => {
   console.log('Connected to database');
 });
-
-
 
 // GraphQL 스키마
 const schema = buildSchema(`
@@ -25,46 +21,70 @@ const schema = buildSchema(`
     videoUrl: String
     videoTime: Int
   }
-
   input VideoInput {
     title: String
     description: String
     videoUrl: String
     videoTime: Int
   }
-
+  type Player {
+    id: ID!
+    playername: String
+    playerxp: String
+  }
+  input PlayerInput {
+    playername: String
+    playerxp: String
+  }
   type Query {
     videos: [Video]
+    getPlayer(id: ID!): Player
   }
-
   type Mutation {
     createVideo(input: VideoInput): Video
+    createPlayer(input: PlayerInput): Player
+    updatePlayerXp(id: ID!, playerxp: String): Player
   }
 `);
 
 // 리졸버
 const root = {
-    videos: () => Video.find({}),
-    createVideo: ({ input }) => {
-      const newVideo = new Video({
-        title: input.title,
-        description: input.description,
-        videoUrl: input.videoUrl,
-        videoTime: input.videoTime
-      });
-      return newVideo.save();  // MongoDB에 비디오 데이터 저장
-    }
-  };
+  videos: () => Video.find({}),
+  getPlayer: ({ id }) => Player.findById(id),
+  createVideo: ({ input }) => {
+    const newVideo = new Video({
+      title: input.title,
+      description: input.description,
+      videoUrl: input.videoUrl,
+      videoTime: input.videoTime
+    });
+    return newVideo.save();
+  },
+  createPlayer: ({ input }) => {
+    const newPlayer = new Player({
+      playername: input.playername,
+      playerxp: input.playerxp
+    });
+    return newPlayer.save();
+  },
+  updatePlayerXp: ({ id, playerxp }) => {
+    return Player.findByIdAndUpdate(id, { playerxp: playerxp }, { new: true });
+  }
+};
 
 // Express 설정
 const app = express();
-
-app.use(cors());  // 모든 도메인의 클라이언트에서 접근 가능하도록 설정
-
+app.use(cors());
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: root,
   graphiql: true,
 }));
-const PORT = process.env.PORT || 3003; //
+
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+//////////////////////////
+
+
+
