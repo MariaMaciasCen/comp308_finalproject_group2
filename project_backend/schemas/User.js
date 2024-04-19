@@ -10,15 +10,16 @@ const {
   GraphQLInt,
   GraphQLBoolean,
 } = require("graphql");
+const Patient = require("../models/Patient");
 
 const UserType = new GraphQLObjectType({
   name: "User",
   description: "This represents a user in the app",
   fields: () => ({
-    _id: { type: new GraphQLNonNull(GraphQLString) },
-    email: { type: new GraphQLNonNull(GraphQLString) },
-    password: { type: new GraphQLNonNull(GraphQLString) },
-    role: { type: new GraphQLNonNull(GraphQLString) },
+    _id: { type: GraphQLNonNull(GraphQLString) },
+    email: { type: GraphQLNonNull(GraphQLString) },
+    password: { type: GraphQLNonNull(GraphQLString) },
+    role: { type: GraphQLNonNull(GraphQLString) },
   }),
 });
 
@@ -38,6 +39,26 @@ const UserDeleteType = new GraphQLObjectType({
   description: "This represents the result of deleting an user",
   fields: () => ({
     success: { type: new GraphQLNonNull(GraphQLBoolean) },
+  }),
+});
+
+const PatientDeleteType = new GraphQLObjectType({
+  name: "DeletePatientInfo",
+  description: "This represents the result of deleting an patient",
+  fields: () => ({
+    success: { type: GraphQLNonNull(GraphQLBoolean) },
+  }),
+});
+const PatientType = new GraphQLObjectType({
+  name: "Patient",
+  description: "This represents a patient in the app",
+  fields: () => ({
+    _id: { type: GraphQLNonNull(GraphQLString) },
+    pulse_rate: { type: GraphQLString },
+    blood_pressure: { type: GraphQLString },
+    weight: { type: GraphQLString },
+    temperature: { type: GraphQLString },
+    respiratory_rate: { type: GraphQLString },
   }),
 });
 
@@ -88,18 +109,18 @@ const UserQueryType = new GraphQLObjectType({
 
           const payload = { id: user._id, email: user.email };
           jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: 36000 },
-            (err, token) => {
-              if (err) {
-                throw new Error(err);
+              payload,
+              process.env.JWT_SECRET,
+              { expiresIn: 36000 },
+              (err, token) => {
+                if (err) {
+                  throw new Error(err);
+                }
+                return {
+                  ...payload,
+                  token: token,
+                };
               }
-              return {
-                ...payload,
-                token: token,
-              };
-            }
           );
         } catch (error) {
           console.error(error);
@@ -144,13 +165,13 @@ const UserMutationType = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         const EditUser = User.findByIdAndUpdate(
-          args.id,
-          {
-            email: args.email,
-            password: args.password,
-            role: args.role,
-          },
-          { new: true }
+            args.id,
+            {
+              email: args.email,
+              password: args.password,
+              role: args.role,
+            },
+            { new: true }
         );
         return EditUser;
       },
@@ -164,6 +185,72 @@ const UserMutationType = new GraphQLObjectType({
       },
       resolve: async (parent, args) => {
         const result = await User.findByIdAndDelete(args.id);
+        if (!result) {
+          return { success: false };
+        }
+        return { success: true };
+      },
+    },
+    
+    //Patient
+    AddPatientInfo: {
+      type: PatientType,
+      description: "Add a Patient",
+      args: {
+        pulse_rate: { type: GraphQLString },
+        blood_pressure: { type: GraphQLString },
+        weight: { type: GraphQLString },
+        temperature: { type: GraphQLString },
+        respiratory_rate: { type: GraphQLString },
+      },
+      resolve: async (parent, args) => {
+        const newPatient = new Patient({
+          pulse_rate: args.pulse_rate,
+          blood_pressure: args.blood_pressure,
+          weight: args.weight,
+          temperature: args.temperature,
+          respiratory_rate: args.respiratory_rate,
+        });
+        return await newPatient.save();
+      },
+    },
+    EditPatientInfo: {
+      type: PatientType,
+      description: "Edit a Patient by Id",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLString) },
+        pulse_rate: { type: GraphQLString },
+        blood_pressure: { type: GraphQLString },
+        weight: { type: GraphQLString },
+        temperature: { type: GraphQLString },
+        respiratory_rate: { type: GraphQLString },
+      },
+      resolve: async (parent, args) => {
+        const updatedPatient = await Patient.findByIdAndUpdate(
+            args.id,
+            {
+              pulse_rate: args.pulse_rate,
+              blood_pressure: args.blood_pressure,
+              weight: args.weight,
+              temperature: args.temperature,
+              respiratory_rate: args.respiratory_rate,
+            },
+            { new: true }
+        );
+        if (!updatedPatient) {
+          throw new Error("Patient not found");
+        }
+        return updatedPatient;
+      },
+    },
+    DeletePatientInfo: {
+      type: PatientDeleteType,
+      description: "Delete a Patient by Id",
+      args: {
+        id: { type: GraphQLNonNull(GraphQLString) },
+      },
+      resolve: async (parent, args) => {
+        const result = await Patient.findByIdAndDelete(args.id);
         if (!result) {
           return { success: false };
         }
