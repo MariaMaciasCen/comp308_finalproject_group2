@@ -10,6 +10,7 @@ import PatientInfo from "./Components/PatientInfo";
 import GameVideo from "./Components/GameVideo";
 import Exercises from "./Components/Exercises";
 
+
 function App() {
   return (
     <BrowserRouter>

@@ -62,6 +62,26 @@ const PatientType = new GraphQLObjectType({
   }),
 });
 
+const PatientDeleteType = new GraphQLObjectType({
+  name: "DeletePatientInfo",
+  description: "This represents the result of deleting an patient",
+  fields: () => ({
+    success: { type: GraphQLNonNull(GraphQLBoolean) },
+  }),
+});
+const PatientType = new GraphQLObjectType({
+  name: "Patient",
+  description: "This represents a patient in the app",
+  fields: () => ({
+    _id: { type: GraphQLNonNull(GraphQLString) },
+    pulse_rate: { type: GraphQLString },
+    blood_pressure: { type: GraphQLString },
+    weight: { type: GraphQLString },
+    temperature: { type: GraphQLString },
+    respiratory_rate: { type: GraphQLString },
+  }),
+});
+
 const UserQueryType = new GraphQLObjectType({
   name: "Query",
   description: "Root Query",
