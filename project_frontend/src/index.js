@@ -6,18 +6,28 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "fa-icons";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import GameVideo from "./Components/GameVideo";
 
 const client = new ApolloClient({
-  uri: "http://localhost:3000/graphql",
+  uri: "http://localhost:3003/graphql",
+  cache: new InMemoryCache(),
+});
+
+const client4000 = new ApolloClient({
+  uri: "http://localhost:4000/graphql",
   cache: new InMemoryCache(),
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
+    <ApolloProvider client={client} >
       <App />
-    </ApolloProvider>
+    
+      
+        
+      </ApolloProvider>
+      
   </React.StrictMode>
 );
 
